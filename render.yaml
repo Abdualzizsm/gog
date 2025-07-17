@@ -13,4 +13,4 @@ services:
       - key: GEMINI_API_KEY
         sync: false # Do not sync this value from the YAML file. Set it in the Render dashboard.
       - key: PYTHON_VERSION
-        value: 3.11 # Specify a Python version
+        value: 3.11.9 # Specify a full Python version
