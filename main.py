@@ -3,6 +3,8 @@ import json
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, Response
 from weasyprint import HTML
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
@@ -127,6 +129,49 @@ async def download_pdf(request: Request, report_data: str = Form(...)):
         return templates.TemplateResponse("index.html", {
             "request": request,
             "error": "Could not generate PDF report. Please try again."
+        })
+
+@app.post("/send-email")
+async def send_email(request: Request, report_data: str = Form(...), recipient_email: str = Form(...)):
+    """Sends the report as an email using SendGrid."""
+    SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+    SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+
+    if not SENDGRID_API_KEY or not SENDER_EMAIL:
+        return templates.TemplateResponse("report.html", {
+            "request": request,
+            "report": json.loads(report_data),
+            "error": "Email service is not configured on the server."
+        })
+
+    try:
+        report = json.loads(report_data)
+        email_html_content = templates.get_template("report_pdf.html").render({
+            "request": request,
+            "report": report
+        })
+
+        message = Mail(
+            from_email=SENDER_EMAIL,
+            to_emails=recipient_email,
+            subject='Your Google Maps Review Analysis Report',
+            html_content=email_html_content)
+        
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        sg.send(message)
+        
+        return templates.TemplateResponse("report.html", {
+            "request": request,
+            "report": report,
+            "success": f"Report sent successfully to {recipient_email}!"
+        })
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return templates.TemplateResponse("report.html", {
+            "request": request,
+            "report": report,
+            "error": "Failed to send email. Please check server configuration."
         })
 
 # To run the app, use the command: uvicorn main:app --reload

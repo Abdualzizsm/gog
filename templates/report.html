@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تقرير التحليل</title>
     <link rel="stylesheet" href="/static/style.css">
+    <!-- Email Modal -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('emailModal').style.display='none'">&times;</span>
+            <h2>إرسال التقرير عبر البريد</h2>
+            <p>الرجاء إدخال البريد الإلكتروني للمستلم.</p>
+            <form id="emailForm" action="/send-email" method="post">
+                <input type="hidden" name="report_data" value='{{ report | tojson | safe }}'>
+                <input type="email" name="recipient_email" placeholder="example@email.com" required>
+                <button type="submit" class="report-button">إرسال</button>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -17,14 +31,21 @@
         <main class="report-container">
             <!-- Report Actions -->
             <div class="report-actions">
+                <!-- PDF Download -->
                 <form action="/download-pdf" method="post" style="display: inline;">
-                    <input type="hidden" name="report_data" value="{{ report | tojson | safe }}">
+                    <input type="hidden" name="report_data" value='{{ report | tojson | safe }}'>
                     <button type="submit" class="report-button">تحميل PDF</button>
                 </form>
+
+                <!-- Copy Text (functionality to be added) -->
                 <button class="report-button">نسخ النص</button>
-                <button class="report-button">إرسال بالبريد</button>
+
+                <!-- Send Email -->
+                <button type="button" class="report-button" onclick="document.getElementById('emailModal').style.display='block'">إرسال بالبريد</button>
+
+                <!-- All Reviews -->
                 <form action="/reviews" method="post" style="display: inline;">
-                    <input type="hidden" name="report_data" value="{{ report | tojson | safe }}">
+                    <input type="hidden" name="report_data" value='{{ report | tojson | safe }}'>
                     <button type="submit" class="report-button">عرض جميع التقييمات المفروزة</button>
                 </form>
             </div>
@@ -117,7 +138,7 @@
 
     <script>
         const ctx = document.getElementById('ratingsChart').getContext('2d');
-                const ratingsData = {{ report.ratings_distribution | tojson | safe }};
+        const ratingsData = {{ report.ratings_distribution | tojson | safe }};
         new Chart(ctx, {
             type: 'bar',
             data: {
