@@ -1,4 +1,5 @@
 import os
+import json
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -73,5 +74,30 @@ async def analyze_reviews(request: Request, map_url: str = Form(...)):
             "error": str(e)
         })
 
+
+@app.post("/reviews", response_class=HTMLResponse)
+async def show_all_reviews(request: Request, report_data: str = Form(...)):
+    """Displays all classified reviews on a separate page."""
+    try:
+        report = json.loads(report_data)
+        classified_reviews = report.get('classified_reviews', [])
+        
+        positive_reviews = [r for r in classified_reviews if r['sentiment'] == 'Positive']
+        negative_reviews = [r for r in classified_reviews if r['sentiment'] == 'Negative']
+        neutral_reviews = [r for r in classified_reviews if r['sentiment'] == 'Neutral']
+
+        return templates.TemplateResponse("all_reviews.html", {
+            "request": request,
+            "positive_reviews": positive_reviews,
+            "negative_reviews": negative_reviews,
+            "neutral_reviews": neutral_reviews
+        })
+    except Exception as e:
+        print(f"Error processing reviews page: {e}")
+        # Redirect to home with an error if data is malformed
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "error": "Could not load the detailed reviews view. Please try again."
+        })
 
 # To run the app, use the command: uvicorn main:app --reload

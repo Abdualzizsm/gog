@@ -101,21 +101,29 @@ def analyze_reviews_with_gemini(reviews: list) -> dict:
     4.  **summary**:
         -   `problems`: (Array of strings) A summary of the most common problems mentioned.
         -   `solutions`: (Array of strings) Suggest actionable solutions for the identified problems.
+    5.  **classified_reviews**: (Array of objects) Classify each review individually.
+        -   `snippet`: (String) The original review text.
+        -   `sentiment`: (String) The sentiment of the review ('Positive', 'Negative', 'Neutral').
 
     **Example JSON output format:**
     {{
         "swot": {{
-            "strengths": ["Service is excellent", "Location is convenient"],
-            "weaknesses": ["Prices are high", "Limited parking"],
-            "opportunities": ["Expand delivery service", "Introduce a loyalty program"],
+            "strengths": ["Service is excellent"],
+            "weaknesses": ["Prices are high"],
+            "opportunities": ["Expand delivery service"],
             "threats": ["New competitor opening nearby"]
         }},
         "sentiment": "Positive",
-        "keywords": ["service", "price", "location", "staff", "parking"],
+        "keywords": ["service", "price", "location"],
         "summary": {{
-            "problems": ["Customers complain about high prices.", "Parking is a frequent issue."],
-            "solutions": ["Introduce a value menu or weekly specials.", "Partner with a nearby garage for validated parking."]
-        }}
+            "problems": ["Customers complain about high prices."],
+            "solutions": ["Introduce a value menu."]
+        }},
+        "classified_reviews": [
+            {{ "snippet": "The service was amazing, very fast!", "sentiment": "Positive" }},
+            {{ "snippet": "It was okay, nothing special.", "sentiment": "Neutral" }},
+            {{ "snippet": "Terrible experience, very rude staff.", "sentiment": "Negative" }}
+        ]
     }}
     """
 

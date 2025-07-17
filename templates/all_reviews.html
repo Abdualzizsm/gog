@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جميع التقييمات</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .reviews-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+        .review-column {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .review-column h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.75rem;
+        }
+        .review-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .review-column.positive h2 { border-color: #28a745; }
+        .review-column.negative h2 { border-color: #dc3545; }
+        .review-column.neutral h2 { border-color: #6c757d; }
+
+        .back-link {
+            display: inline-block;
+            margin: 2rem;
+            padding: 0.5rem 1rem;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">فرز التقييمات</h1>
+        <a href="javascript:history.back()" class="back-link">العودة للتقرير</a>
+
+        <div class="reviews-container">
+            <!-- Positive Reviews -->
+            <div class="review-column positive">
+                <h2>✅ آراء مؤيدة</h2>
+                {% for review in positive_reviews %}
+                    <div class="review-card">{{ review.snippet }}</div>
+                {% else %}
+                    <p>لا توجد آراء مؤيدة.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Negative Reviews -->
+            <div class="review-column negative">
+                <h2>❌ آراء معارضة</h2>
+                {% for review in negative_reviews %}
+                    <div class="review-card">{{ review.snippet }}</div>
+                {% else %}
+                    <p>لا توجد آراء معارضة.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Neutral Reviews -->
+            <div class="review-column neutral">
+                <h2>➖ آراء محايدة</h2>
+                {% for review in neutral_reviews %}
+                    <div class="review-card">{{ review.snippet }}</div>
+                {% else %}
+                    <p>لا توجد آراء محايدة.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

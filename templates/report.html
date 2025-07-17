@@ -17,9 +17,13 @@
         <main class="report-container">
             <!-- Report Actions -->
             <div class="report-actions">
-                <button>تحميل PDF</button>
-                <button>نسخ النص</button>
-                <button>إرسال بالبريد</button>
+                <button class="report-button">تحميل PDF</button>
+                <button class="report-button">نسخ النص</button>
+                <button class="report-button">إرسال بالبريد</button>
+                <form action="/reviews" method="post" style="display: inline;">
+                    <input type="hidden" name="report_data" value="{{ report | tojson | safe }}">
+                    <button type="submit" class="report-button">عرض جميع التقييمات المفروزة</button>
+                </form>
             </div>
 
             <!-- SWOT Analysis -->
