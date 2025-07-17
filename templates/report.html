@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير التحليل</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>تقرير تحليل التقييمات</h1>
+            <p>للرابط: <a href="{{ map_url }}" target="_blank">{{ map_url }}</a></p>
+        </header>
+
+        <main class="report-container">
+            <!-- Report Actions -->
+            <div class="report-actions">
+                <button>تحميل PDF</button>
+                <button>نسخ النص</button>
+                <button>إرسال بالبريد</button>
+            </div>
+
+            <!-- SWOT Analysis -->
+            <section class="report-section">
+                <h2>تحليل SWOT</h2>
+                <div class="swot-grid">
+                    <div class="swot-item strengths">
+                        <h3>نقاط القوة</h3>
+                        <ul>
+                            {% for item in report.swot.strengths %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="swot-item weaknesses">
+                        <h3>نقاط الضعف</h3>
+                        <ul>
+                            {% for item in report.swot.weaknesses %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="swot-item opportunities">
+                        <h3>الفرص</h3>
+                        <ul>
+                            {% for item in report.swot.opportunities %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="swot-item threats">
+                        <h3>المخاطر</h3>
+                        <ul>
+                            {% for item in report.swot.threats %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sentiment and Keywords -->
+            <section class="report-section">
+                <div class="grid-2-col">
+                    <div>
+                        <h2>النبرة العامة</h2>
+                        <p class="sentiment-{{ report.sentiment.lower() }}">{{ report.sentiment }}</p>
+                    </div>
+                    <div>
+                        <h2>الكلمات المتكررة</h2>
+                        <div class="keywords">
+                            {% for keyword in report.keywords %}
+                            <span class="keyword">{{ keyword }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ratings Chart -->
+            <section class="report-section">
+                <h2>توزيع التقييمات</h2>
+                <canvas id="ratingsChart"></canvas>
+            </section>
+
+            <!-- Summary -->
+            <section class="report-section">
+                <h2>الملخص وأبرز المشاكل والحلول</h2>
+                <h3>المشاكل الشائعة</h3>
+                <ul>
+                    {% for problem in report.summary.problems %}
+                    <li>{{ problem }}</li>
+                    {% endfor %}
+                </ul>
+                <h3>الحلول المقترحة</h3>
+                <ul>
+                    {% for solution in report.summary.solutions %}
+                    <li>{{ solution }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+        </main>
+        <footer>
+            <p>تم إنشاء التقرير بواسطة Cascade AI</p>
+        </footer>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('ratingsChart').getContext('2d');
+                const ratingsData = {{ report.ratings_distribution | tojson | safe }};
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(ratingsData).map(star => `${star} نجوم`),
+                datasets: [{
+                    label: 'عدد التقييمات',
+                    data: Object.values(ratingsData),
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
