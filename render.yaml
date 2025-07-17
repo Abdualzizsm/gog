@@ -1,0 +1,16 @@
+# Blueprint for deploying the Google Review Analyzer on Render.
+
+services:
+  - type: web
+    name: review-analyzer
+    env: python
+    plan: free # Use the free instance type
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: SERPAPI_API_KEY
+        sync: false # Do not sync this value from the YAML file. Set it in the Render dashboard.
+      - key: GEMINI_API_KEY
+        sync: false # Do not sync this value from the YAML file. Set it in the Render dashboard.
+      - key: PYTHON_VERSION
+        value: 3.11 # Specify a Python version
