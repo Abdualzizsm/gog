@@ -1,7 +1,8 @@
 import os
 import json
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
+from weasyprint import HTML
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
@@ -98,6 +99,34 @@ async def show_all_reviews(request: Request, report_data: str = Form(...)):
         return templates.TemplateResponse("index.html", {
             "request": request,
             "error": "Could not load the detailed reviews view. Please try again."
+        })
+
+@app.post("/download-pdf")
+async def download_pdf(request: Request, report_data: str = Form(...)):
+    """Generates a PDF report and returns it for download."""
+    try:
+        report = json.loads(report_data)
+        
+        # Render the PDF template to an HTML string
+        html_string = templates.get_template("report_pdf.html").render({
+            "request": request,
+            "report": report
+        })
+
+        # Generate PDF from the HTML string, providing base_url for relative paths
+        pdf_bytes = HTML(string=html_string, base_url=str(request.base_url)).write_pdf()
+
+        # Return the PDF as a response for download
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": "attachment; filename=google-maps-report.pdf"}
+        )
+    except Exception as e:
+        print(f"Error generating PDF: {e}")
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "error": "Could not generate PDF report. Please try again."
         })
 
 # To run the app, use the command: uvicorn main:app --reload

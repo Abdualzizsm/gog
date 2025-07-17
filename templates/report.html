@@ -17,7 +17,10 @@
         <main class="report-container">
             <!-- Report Actions -->
             <div class="report-actions">
-                <button class="report-button">تحميل PDF</button>
+                <form action="/download-pdf" method="post" style="display: inline;">
+                    <input type="hidden" name="report_data" value="{{ report | tojson | safe }}">
+                    <button type="submit" class="report-button">تحميل PDF</button>
+                </form>
                 <button class="report-button">نسخ النص</button>
                 <button class="report-button">إرسال بالبريد</button>
                 <form action="/reviews" method="post" style="display: inline;">

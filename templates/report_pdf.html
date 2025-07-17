@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تقرير تحليل التقييمات</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        body {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            direction: rtl;
+            text-align: right;
+        }
+        .report-container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .main-title {
+            text-align: center;
+            color: #004aad;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 25px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .section-title {
+            font-size: 22px;
+            color: #004aad;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #004aad;
+        }
+        ul {
+            padding-right: 20px;
+            list-style-type: '✓ ';
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .swot-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .swot-item {
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .swot-item h4 { margin-top: 0; font-size: 18px; }
+        .strengths { background-color: #e9f5ea; border-left: 5px solid #4caf50; }
+        .weaknesses { background-color: #fdeeee; border-left: 5px solid #f44336; }
+        .opportunities { background-color: #e8f4fd; border-left: 5px solid #2196f3; }
+        .threats { background-color: #fff8e1; border-left: 5px solid #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <h1 class="main-title">تقرير تحليل تقييمات خرائط جوجل</h1>
+
+        <!-- SWOT Analysis -->
+        <div class="section">
+            <h2 class="section-title">تحليل SWOT</h2>
+            <div class="swot-container">
+                <div class="swot-item strengths">
+                    <h4>نقاط القوة</h4>
+                    <ul>
+                        {% for item in report.swot.strengths %}<li>{{ item }}</li>{% endfor %}
+                    </ul>
+                </div>
+                <div class="swot-item weaknesses">
+                    <h4>نقاط الضعف</h4>
+                    <ul>
+                        {% for item in report.swot.weaknesses %}<li>{{ item }}</li>{% endfor %}
+                    </ul>
+                </div>
+                <div class="swot-item opportunities">
+                    <h4>الفرص</h4>
+                    <ul>
+                        {% for item in report.swot.opportunities %}<li>{{ item }}</li>{% endfor %}
+                    </ul>
+                </div>
+                <div class="swot-item threats">
+                    <h4>التهديدات</h4>
+                    <ul>
+                        {% for item in report.swot.threats %}<li>{{ item }}</li>{% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="section">
+            <h2 class="section-title">الكلمات المفتاحية</h2>
+            <ul>
+                {% for keyword in report.keywords %}<li>{{ keyword }}</li>{% endfor %}
+            </ul>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <h2 class="section-title">ملخص المشاكل والحلول المقترحة</h2>
+            <h4>المشاكل الشائعة</h4>
+            <ul>
+                {% for problem in report.summary.problems %}<li>{{ problem }}</li>{% endfor %}
+            </ul>
+            <h4>الحلول المقترحة</h4>
+            <ul>
+                {% for solution in report.summary.solutions %}<li>{{ solution }}</li>{% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

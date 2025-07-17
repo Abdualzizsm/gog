@@ -5,12 +5,12 @@ services:
     name: review-analyzer
     env: python
     plan: free # Use the free instance type
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: "chmod +x render-build.sh && ./render-build.sh"
     startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: SERPAPI_API_KEY
-        sync: false # Do not sync this value from the YAML file. Set it in the Render dashboard.
+        sync: false
       - key: GEMINI_API_KEY
-        sync: false # Do not sync this value from the YAML file. Set it in the Render dashboard.
+        sync: false
       - key: PYTHON_VERSION
-        value: 3.11.9 # Specify a full Python version
+        value: 3.11.9
