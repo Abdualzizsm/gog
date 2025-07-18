@@ -92,7 +92,7 @@ async def add_user(request: Request, username: str = Form(...), password: str = 
         return templates.TemplateResponse("admin_dashboard.html", {
             "request": request, 
             "users": users.keys(),
-            "message": f"User '{username}' already exists."
+            "error": f"المستخدم '{username}' موجود بالفعل."
         })
     
     hashed_password = get_password_hash(password)
@@ -101,7 +101,7 @@ async def add_user(request: Request, username: str = Form(...), password: str = 
     return templates.TemplateResponse("admin_dashboard.html", {
         "request": request, 
         "users": users.keys(),
-        "message": f"User '{username}' added successfully."
+        "message": f"تمت إضافة المستخدم '{username}' بنجاح."
     })
 
 # --- Main Application Endpoints (Protected) ---

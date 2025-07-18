@@ -74,4 +74,7 @@ async def get_current_user(request: Request):
         return None
 
     users = get_users()
-    return users.get(username)
+    user_data = users.get(username)
+    if user_data:
+        return {"username": username}
+    return None
