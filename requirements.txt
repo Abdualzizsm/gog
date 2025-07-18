@@ -6,7 +6,6 @@ google-generativeai
 jinja2
 python-multipart
 requests
-bcrypt==3.2.2
-passlib==1.7.4
+passlib[bcrypt]
 python-jose
 google-generativeai

@@ -35,21 +35,20 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-@app.post("/login")
-async def handle_user_login(request: Request, username: str = Form(...), password: str = Form(...)):
+@app.post("/token")
+async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
     users = get_users()
-    user_data = users.get(username)
-    if not user_data or not verify_password(password, user_data.get("password")):
+    user = users.get(form_data.username)
+    if not user or not verify_password(form_data.password, user):
         return templates.TemplateResponse("login.html", {
-            "request": request,
-            "error": "اسم المستخدم أو كلمة المرور غير صحيحة"
-        }, status_code=status.HTTP_400_BAD_REQUEST)
+            "request": {},
+            "error": "Incorrect username or password"
+        }, status_code=400)
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": username}, expires_delta=access_token_expires
+        data={"sub": form_data.username}, expires_delta=access_token_expires
     )
-    
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
     return response
@@ -92,7 +91,7 @@ async def add_user(request: Request, username: str = Form(...), password: str = 
         return templates.TemplateResponse("admin_dashboard.html", {
             "request": request, 
             "users": users.keys(),
-            "error": f"المستخدم '{username}' موجود بالفعل."
+            "message": f"User '{username}' already exists."
         })
     
     hashed_password = get_password_hash(password)
@@ -101,7 +100,7 @@ async def add_user(request: Request, username: str = Form(...), password: str = 
     return templates.TemplateResponse("admin_dashboard.html", {
         "request": request, 
         "users": users.keys(),
-        "message": f"تمت إضافة المستخدم '{username}' بنجاح."
+        "message": f"User '{username}' added successfully."
     })
 
 # --- Main Application Endpoints (Protected) ---
