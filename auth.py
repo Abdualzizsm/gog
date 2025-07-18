@@ -59,22 +59,19 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 # --- Dependency for protected routes ---
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+async def get_current_user(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        return None
+
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        token_value = token.split(" ")[1]
+        payload = jwt.decode(token_value, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    
+            return None
+    except (JWTError, IndexError):
+        return None
+
     users = get_users()
-    if username not in users:
-        raise credentials_exception
-        
-    return {"username": username}
+    return users.get(username)

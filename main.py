@@ -107,10 +107,15 @@ async def add_user(request: Request, username: str = Form(...), password: str = 
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse("index.html", {"request": request, "user": user})
 
 @app.post("/analyze", response_class=HTMLResponse)
 async def analyze_reviews(request: Request, map_url: str = Form(...), user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+
     if not SERPAPI_API_KEY or not GEMINI_API_KEY:
         return templates.TemplateResponse("index.html", {
             "request": request, "user": user,
