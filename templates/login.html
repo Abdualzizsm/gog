@@ -4,32 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>تسجيل الدخول</h1>
-        </header>
-        <main>
-            {% if error %}
-            <div class="error-message">{{ error }}</div>
-            {% endif %}
-            <form action="/token" method="post" class="login-form">
-                <div class="form-group">
-                    <label for="username">اسم المستخدم</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">كلمة المرور</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn">دخول</button>
-            </form>
-             <div class="form-links">
-                <a href="/admin/login">دخول كمسؤول</a>
+<body class="login-layout">
+    <div class="login-container">
+        <h1>تسجيل دخول المستخدم</h1>
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+        <form action="/login" method="post" class="login-form">
+            <div class="form-group">
+                <label for="username">اسم المستخدم:</label>
+                <input type="text" id="username" name="username" required>
             </div>
-        </main>
+            <div class="form-group">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">دخول</button>
+        </form>
+        <div class="form-links">
+            <a href="/admin/login">هل أنت مسؤول؟ سجل الدخول من هنا</a>
+        </div>
     </div>
 </body>
 </html>
