@@ -5,6 +5,4 @@ google-search-results
 google-generativeai
 jinja2
 python-multipart
-weasyprint
-sendgrid
 requests

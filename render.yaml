@@ -3,16 +3,14 @@
 services:
   - type: web
     name: review-analyzer
-    env: docker
+    env: python
     plan: free # Use the free instance type
-    dockerfilePath: ./Dockerfile
-    startCommand: "gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT main:app"
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: SERPAPI_API_KEY
-        sync: false
+        sync: false # Do not sync this value from the YAML file. Set it in the Render dashboard.
       - key: GEMINI_API_KEY
-        sync: false
-      - key: SENDGRID_API_KEY
-        sync: false
-      - key: SENDER_EMAIL
-        sync: false
+        sync: false # Do not sync this value from the YAML file. Set it in the Render dashboard.
+      - key: PYTHON_VERSION
+        value: 3.11.9 # Specify a full Python version

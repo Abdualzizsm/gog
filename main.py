@@ -1,10 +1,6 @@
 import os
-import json
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, Response
-from weasyprint import HTML
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
@@ -77,101 +73,5 @@ async def analyze_reviews(request: Request, map_url: str = Form(...)):
             "error": str(e)
         })
 
-
-@app.post("/reviews", response_class=HTMLResponse)
-async def show_all_reviews(request: Request, report_data: str = Form(...)):
-    """Displays all classified reviews on a separate page."""
-    try:
-        report = json.loads(report_data)
-        classified_reviews = report.get('classified_reviews', [])
-        
-        positive_reviews = [r for r in classified_reviews if r['sentiment'] == 'Positive']
-        negative_reviews = [r for r in classified_reviews if r['sentiment'] == 'Negative']
-        neutral_reviews = [r for r in classified_reviews if r['sentiment'] == 'Neutral']
-
-        return templates.TemplateResponse("all_reviews.html", {
-            "request": request,
-            "positive_reviews": positive_reviews,
-            "negative_reviews": negative_reviews,
-            "neutral_reviews": neutral_reviews
-        })
-    except Exception as e:
-        print(f"Error processing reviews page: {e}")
-        # Redirect to home with an error if data is malformed
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "error": "Could not load the detailed reviews view. Please try again."
-        })
-
-@app.post("/download-pdf")
-async def download_pdf(request: Request, report_data: str = Form(...)):
-    """Generates a PDF report and returns it for download."""
-    try:
-        report = json.loads(report_data)
-        
-        # Render the PDF template to an HTML string
-        html_string = templates.get_template("report_pdf.html").render({
-            "request": request,
-            "report": report
-        })
-
-        # Generate PDF from the HTML string, providing base_url for relative paths
-        pdf_bytes = HTML(string=html_string, base_url=str(request.base_url)).write_pdf()
-
-        # Return the PDF as a response for download
-        return Response(
-            content=pdf_bytes,
-            media_type="application/pdf",
-            headers={"Content-Disposition": "attachment; filename=google-maps-report.pdf"}
-        )
-    except Exception as e:
-        print(f"Error generating PDF: {e}")
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "error": "Could not generate PDF report. Please try again."
-        })
-
-@app.post("/send-email")
-async def send_email(request: Request, report_data: str = Form(...), recipient_email: str = Form(...)):
-    """Sends the report as an email using SendGrid."""
-    SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-    SENDER_EMAIL = os.getenv("SENDER_EMAIL")
-
-    if not SENDGRID_API_KEY or not SENDER_EMAIL:
-        return templates.TemplateResponse("report.html", {
-            "request": request,
-            "report": json.loads(report_data),
-            "error": "Email service is not configured on the server."
-        })
-
-    try:
-        report = json.loads(report_data)
-        email_html_content = templates.get_template("report_pdf.html").render({
-            "request": request,
-            "report": report
-        })
-
-        message = Mail(
-            from_email=SENDER_EMAIL,
-            to_emails=recipient_email,
-            subject='Your Google Maps Review Analysis Report',
-            html_content=email_html_content)
-        
-        sg = SendGridAPIClient(SENDGRID_API_KEY)
-        sg.send(message)
-        
-        return templates.TemplateResponse("report.html", {
-            "request": request,
-            "report": report,
-            "success": f"Report sent successfully to {recipient_email}!"
-        })
-
-    except Exception as e:
-        print(f"Error sending email: {e}")
-        return templates.TemplateResponse("report.html", {
-            "request": request,
-            "report": report,
-            "error": "Failed to send email. Please check server configuration."
-        })
 
 # To run the app, use the command: uvicorn main:app --reload
