@@ -6,3 +6,6 @@ google-generativeai
 jinja2
 python-multipart
 requests
+passlib[bcrypt]
+python-jose
+google-generativeai
