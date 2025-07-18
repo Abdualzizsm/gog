@@ -85,7 +85,7 @@ async def admin_dashboard(request: Request, _=Depends(get_admin_session)):
     users = get_users()
     return templates.TemplateResponse("admin_dashboard.html", {"request": request, "users": users.keys()})
 
-@app.post("/admin/dashboard")
+@app.post("/admin/add_user")
 async def add_user(request: Request, username: str = Form(...), password: str = Form(...), _=Depends(get_admin_session)):
     users = get_users()
     if username in users:
